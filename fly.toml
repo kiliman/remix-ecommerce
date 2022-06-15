@@ -1,4 +1,4 @@
-app = "remix-ecommerce-a462"
+app = "remix-ecommerce-kiliman"
 kill_signal = "SIGINT"
 kill_timeout = 5
 processes = [ ]
