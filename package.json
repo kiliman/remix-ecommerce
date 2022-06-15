@@ -82,6 +82,6 @@
     "node": ">=14"
   },
   "prisma": {
-    "seed": "node --require tsconfig-paths/register prisma/seed.js"
+    "seed": "node prisma/seed.js"
   }
 }
