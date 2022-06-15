@@ -7,39 +7,35 @@ const prisma = new PrismaClient();
 async function seed() {
   const email = "rachel@remix.run";
 
-  // cleanup the existing database
-  await prisma.user.delete({ where: { email } }).catch(() => {
-    // no worries if it doesn't exist yet
-  });
-  await prisma.note.deleteMany({}).catch(() => {
-    // no worries if it doesn't exist yet
-  });
-  await prisma.product.deleteMany({}).catch(() => {
-    // no worries if it doesn't exist yet
-  });
+  const userCount = await prisma.user.count();
+  const productCount = await prisma.product.count();
 
   const hashedPassword = await bcrypt.hash("racheliscool", 10);
 
-  const user = await prisma.user.create({
-    data: {
-      email,
-      password: {
-        create: {
-          hash: hashedPassword,
+  if (userCount === 0) {
+    // create default user
+    await prisma.user.create({
+      data: {
+        email,
+        password: {
+          create: {
+            hash: hashedPassword,
+          },
         },
       },
-    },
-  });
-
-  for (let product of products) {
-    await prisma.product.create({
-      data: {
-        name: product.name,
-        description: product.description,
-        price: product.price,
-        thumbnail: product.thumbnail,
-      },
     });
+  }
+  if (productCount === 0) {
+    for (let product of products) {
+      await prisma.product.create({
+        data: {
+          name: product.name,
+          description: product.description,
+          price: product.price,
+          thumbnail: product.thumbnail,
+        },
+      });
+    }
   }
 
   console.log(`Database has been seeded. 🌱`);
