@@ -1,4 +1,5 @@
 const { PrismaClient } = require("@prisma/client");
+const products = require("./products.json");
 const bcrypt = require("bcryptjs");
 
 const prisma = new PrismaClient();
@@ -8,6 +9,12 @@ async function seed() {
 
   // cleanup the existing database
   await prisma.user.delete({ where: { email } }).catch(() => {
+    // no worries if it doesn't exist yet
+  });
+  await prisma.note.deleteMany({}).catch(() => {
+    // no worries if it doesn't exist yet
+  });
+  await prisma.product.deleteMany({}).catch(() => {
     // no worries if it doesn't exist yet
   });
 
@@ -24,21 +31,16 @@ async function seed() {
     },
   });
 
-  await prisma.note.create({
-    data: {
-      title: "My first note",
-      body: "Hello, world!",
-      userId: user.id,
-    },
-  });
-
-  await prisma.note.create({
-    data: {
-      title: "My second note",
-      body: "Hello, world!",
-      userId: user.id,
-    },
-  });
+  for (let product of products) {
+    await prisma.product.create({
+      data: {
+        name: product.name,
+        description: product.description,
+        price: product.price,
+        thumbnail: product.thumbnail,
+      },
+    });
+  }
 
   console.log(`Database has been seeded. 🌱`);
 }
