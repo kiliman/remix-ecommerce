@@ -20,3 +20,5 @@ Login with the predefined user:
 email: rachel@remix.run
 password: racheliscool
 ```
+
+Product Catalog data provided by [dummyJSON](https://dummyjson.com/docs/products)
