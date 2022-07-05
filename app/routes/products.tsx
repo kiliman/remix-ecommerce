@@ -9,8 +9,8 @@ type LoaderData = {
   cartItemsCount: number;
 };
 export const loader: LoaderFunction = async ({ request }) => {
-  const requiredUserId = await requireUserId(request);
-  const cartItemsCount = await getCartItemsCount(requiredUserId);
+  const userId = await requireUserId(request);
+  const cartItemsCount = await getCartItemsCount(userId);
   return json({ cartItemsCount });
 };
 

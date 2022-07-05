@@ -5,7 +5,7 @@ export type { Cart, CartItem, Product } from "@prisma/client";
 
 export async function getShoppingCart(userId: string) {
   return prisma.cart.findFirst({
-    where: { userId },
+    where: { id: userId },
     include: {
       cartItems: {
         include: {
@@ -27,7 +27,7 @@ export async function getCartItemsCount(userId: string) {
 export async function addShoppingCart(userId: string) {
   return prisma.cart.create({
     data: {
-      userId,
+      id: userId,
     },
   });
 }

@@ -1,8 +1,10 @@
-import { ActionFunction, json, LoaderFunction } from "@remix-run/node";
+import type { ActionFunction, LoaderFunction } from "@remix-run/node";
+import { json } from "@remix-run/node";
 import { useFetcher, useLoaderData } from "@remix-run/react";
 import { addToCart } from "~/models/cart.server";
-import { getAllProducts, Product } from "~/models/product.server";
-import { requireUserId } from "~/session.server";
+import type { Product } from "~/models/product.server";
+import { getAllProducts } from "~/models/product.server";
+import { getUserId } from "~/session.server";
 
 type LoaderData = {
   products: Product[];
@@ -13,13 +15,13 @@ export const loader: LoaderFunction = async ({ request }) => {
 };
 
 export const action: ActionFunction = async ({ request }) => {
-  const requiredUserId = await requireUserId(request);
+  const userId = await getUserId(request);
   const formData = await request.formData();
   const action = formData.get("action");
   switch (action) {
     case "addToCart": {
       const productId = formData.get("productId");
-      await addToCart(requiredUserId, String(productId));
+      await addToCart(userId, String(productId));
       break;
     }
     default: {

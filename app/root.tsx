@@ -1,3 +1,4 @@
+import type { User } from "@prisma/client";
 import type {
   LinksFunction,
   LoaderFunction,
@@ -13,8 +14,8 @@ import {
   ScrollRestoration,
 } from "@remix-run/react";
 
+import { commitSession, getSession, getUser } from "./session.server";
 import tailwindStylesheetUrl from "./styles/tailwind.css";
-import { getUser } from "./session.server";
 
 export const links: LinksFunction = () => {
   return [{ rel: "stylesheet", href: tailwindStylesheetUrl }];
@@ -22,18 +23,24 @@ export const links: LinksFunction = () => {
 
 export const meta: MetaFunction = () => ({
   charset: "utf-8",
-  title: "Remix Notes",
+  title: "Remix E-Commerce",
   viewport: "width=device-width,initial-scale=1",
 });
 
 type LoaderData = {
-  user: Awaited<ReturnType<typeof getUser>>;
+  user: User | null;
 };
 
 export const loader: LoaderFunction = async ({ request }) => {
-  return json<LoaderData>({
-    user: await getUser(request),
-  });
+  const user = await getUser(request);
+  const session = await getSession(request);
+  session.set("userId", user?.id);
+  return json<LoaderData>(
+    {
+      user,
+    },
+    { headers: { "set-cookie": await commitSession(session) } }
+  );
 };
 
 export default function App() {

@@ -1,12 +1,12 @@
 import { TrashIcon } from "@heroicons/react/outline";
 import { MinusCircleIcon, PlusCircleIcon } from "@heroicons/react/solid";
-import { ActionFunction, json, LoaderFunction } from "@remix-run/node";
+import type { ActionFunction, LoaderFunction } from "@remix-run/node";
+import { json } from "@remix-run/node";
 import { useFetcher, useLoaderData } from "@remix-run/react";
+import type { CartItem, Product } from "~/models/cart.server";
 import {
   addToCart,
-  CartItem,
   getShoppingCart,
-  Product,
   removeFromCart,
 } from "~/models/cart.server";
 import { requireUserId } from "~/session.server";

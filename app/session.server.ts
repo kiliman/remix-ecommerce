@@ -1,4 +1,5 @@
 import { createCookieSessionStorage, redirect } from "@remix-run/node";
+import { randomUUID } from "crypto";
 import invariant from "tiny-invariant";
 
 import type { User } from "~/models/user.server";
@@ -10,13 +11,15 @@ export const sessionStorage = createCookieSessionStorage({
   cookie: {
     name: "__session",
     httpOnly: true,
-    maxAge: 0,
+    maxAge: 1000 * 60 * 60 * 24 * 7,
     path: "/",
     sameSite: "lax",
     secrets: [process.env.SESSION_SECRET],
     secure: process.env.NODE_ENV === "production",
   },
 });
+const { commitSession } = sessionStorage;
+export { commitSession };
 
 const USER_SESSION_KEY = "userId";
 
@@ -25,19 +28,27 @@ export async function getSession(request: Request) {
   return sessionStorage.getSession(cookie);
 }
 
-export async function getUserId(
-  request: Request
-): Promise<User["id"] | undefined> {
+export async function getUserId(request: Request): Promise<string> {
   const session = await getSession(request);
   const userId = session.get(USER_SESSION_KEY);
-  return userId;
+  return userId ?? `guest-${randomUUID()}`;
 }
 
+function guestUser(userId: string): User {
+  return {
+    id: userId,
+    email: "Guest",
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  };
+}
 export async function getUser(request: Request) {
   const userId = await getUserId(request);
   if (userId === undefined) return null;
 
-  const user = await getUserById(userId);
+  const user = userId.startsWith("guest-")
+    ? guestUser(userId)
+    : await getUserById(userId);
   if (user) return user;
 
   throw await logout(request);
