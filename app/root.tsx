@@ -36,9 +36,7 @@ export const loader: LoaderFunction = async ({ request }) => {
   const session = await getSession(request);
   session.set("userId", user?.id);
   return json<LoaderData>(
-    {
-      user,
-    },
+    { user },
     { headers: { "set-cookie": await commitSession(session) } }
   );
 };
