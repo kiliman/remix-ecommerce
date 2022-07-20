@@ -22,3 +22,5 @@ password: racheliscool
 ```
 
 Product Catalog data provided by [dummyJSON](https://dummyjson.com/docs/products)
+
+Demo site: https://remix-ecommerce-kiliman.fly.dev/products
